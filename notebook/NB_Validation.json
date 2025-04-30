@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "41f12dcc-e712-4ac7-83ba-a4576eaac65c"
+				"spark.autotune.trackingId": "af48ce17-fe10-493d-8392-405e069fb8f4"
 			}
 		},
 		"metadata": {
@@ -54,6 +54,39 @@
 					"print(\"Test\")"
 				],
 				"execution_count": 2
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"spark.conf.set(\"fs.azure.account.auth.type.salearnings.dfs.core.windows.net\", \"OAuth\")\n",
+					"spark.conf.set(\"fs.azure.account.oauth.provider.type.salearnings.dfs.core.windows.net\", \"org.apache.hadoop.fs.azurebfs.oauth2.MsiTokenProvider\")\n",
+					""
+				],
+				"execution_count": 14
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"storage_account = \"salearnings\"\n",
+					"container_name = \"learning\"\n",
+					"file_path = \"testing_python_sa.py\"\n",
+					"\n",
+					"storage_path = f\"abfss://{container_name}@{storage_account}.dfs.core.windows.net/{file_path}\"\n",
+					"print(storage_path)\n",
+					""
+				],
+				"execution_count": 16
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"script_content = mssparkutils.fs.head(storage_path)  # Read the file content\n",
+					"exec(script_content)  # Execute the PySpark script\n",
+					"\n",
+					"# with open(storage_path, 'r') as file:\n",
+					"#     exec(file.read())  # Executes the PySpark script"
+				],
+				"execution_count": 18
 			}
 		]
 	}
