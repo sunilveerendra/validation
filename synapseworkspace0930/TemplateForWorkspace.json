@@ -22,15 +22,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('workspaceName'), '/Spark1')]",
-			"type": "Microsoft.Synapse/workspaces/bigDataPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/PL_Validation')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -162,7 +153,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "c423cd06-c1a7-46c3-8015-a40714a390a5"
+						"spark.autotune.trackingId": "af48ce17-fe10-493d-8392-405e069fb8f4"
 					}
 				},
 				"metadata": {
@@ -195,10 +186,46 @@
 					{
 						"cell_type": "code",
 						"source": [
-							"Print(\"Test\")"
+							"print(\"Test\")"
 						],
 						"outputs": [],
-						"execution_count": 1
+						"execution_count": 2
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"spark.conf.set(\"fs.azure.account.auth.type.salearnings.dfs.core.windows.net\", \"OAuth\")\n",
+							"spark.conf.set(\"fs.azure.account.oauth.provider.type.salearnings.dfs.core.windows.net\", \"org.apache.hadoop.fs.azurebfs.oauth2.MsiTokenProvider\")\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 14
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"storage_account = \"salearnings\"\n",
+							"container_name = \"learning\"\n",
+							"file_path = \"testing_python_sa.py\"\n",
+							"\n",
+							"storage_path = f\"abfss://{container_name}@{storage_account}.dfs.core.windows.net/{file_path}\"\n",
+							"print(storage_path)\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 16
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"script_content = mssparkutils.fs.head(storage_path)  # Read the file content\n",
+							"exec(script_content)  # Execute the PySpark script\n",
+							"\n",
+							"# with open(storage_path, 'r') as file:\n",
+							"#     exec(file.read())  # Executes the PySpark script"
+						],
+						"outputs": [],
+						"execution_count": 18
 					}
 				]
 			},
@@ -249,6 +276,15 @@
 				"sparkVersion": "3.4",
 				"isComputeIsolationEnabled": false,
 				"sessionLevelPackagesEnabled": true,
+				"customLibraries": [
+					{
+						"name": "redshift-jdbc42-2.1.0.32.jar",
+						"path": "synapseworkspace0930/libraries/redshift-jdbc42-2.1.0.32.jar",
+						"containerName": "prep",
+						"uploadedTimestamp": "0001-01-01T00:00:00+00:00",
+						"type": "jar"
+					}
+				],
 				"annotations": []
 			},
 			"dependsOn": [],
